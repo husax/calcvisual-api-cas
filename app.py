@@ -1,8 +1,8 @@
 from flask import Flask
+from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
 import sympy
 from sympy import *
-from sympy.parsing.latex import parse_latex
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
@@ -93,8 +93,7 @@ def properties(poly):
             "expr":format(puntosInflexion),
             "latex":latex(puntosInflexion)
             }
-
         }
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True, host='0.0.0.0')
