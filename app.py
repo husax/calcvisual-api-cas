@@ -63,10 +63,14 @@ def properties(poly):
         derNum = diff(polNum, x)*polDen-polNum*diff(polDen, x)
         deriv1 = diff(rac, x)
         deriv2 = diff(deriv1, x)
-        der2Num = diff(derNum, x)*polDen**2 - 2 * \
-            polDen*diff(polDen, x)*derNum
+        der2Num = diff(derNum, x)*polDen**2 - \
+            2*polDen*diff(polDen, x)*derNum
         raicesD1 = aprox(real_roots(derNum))
         raicesD2 = aprox(real_roots(der2Num))
+        polosyRaices= polos + raices
+        polosyRaices.sort()
+        ventanaX = [2*polosyRaices[0] - polosyRaices[-1],   2*polosyRaices[-1] - polosyRaices[0]] if (len(polosyRaices) > 1) \
+            else [- abs(polosyRaices[0])*1.2, abs(polosyRaices[0])*1.2]
         return {
             "polNum": {
                 "expr": format(polNum),
@@ -90,9 +94,11 @@ def properties(poly):
                 "der2Num": format(raicesD2)
             },
             "polos": format(polos),
+            "ventanaX": format(ventanaX),
+            "polosyRaices": format(polosyRaices),
         }
     else:
-        return {"algo": "algo salio mal"}
+        return {"error": "algo salio mal"}
 
 
 def aprox(raices):
