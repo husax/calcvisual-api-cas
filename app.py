@@ -3,6 +3,7 @@ from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
 import sympy
 from sympy import *
+import math
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
@@ -28,13 +29,18 @@ def properties(poly):
     x = symbols('x')
     polinL = poly.split(',')
     if len(polinL) == 1:
-        pol = Poly(polinL[0])
+        pol = polinL[0]
         deriv1 = diff(pol, x)
         deriv2 = diff(deriv1, x)
         raices = aprox(real_roots(pol))
         raicesD1 = aprox(real_roots(deriv1))
         raicesD2 = aprox(real_roots(deriv2))
+        ventanaX = [1.1*raices[0] - 0.1*raices[-1], 1.1*raices[-1] - 0.1*raices[0]] if (len(raices) > 1) \
+            else [- abs(raices[0])*1.2, abs(raices[0])*1.2]
+        ventanaX[0]= floor(ventanaX[0])
+        ventanaX[1]= math.ceil(ventanaX[1])
         return {
+            "racional": format(false),
             "polinomio": {
                 "expr": format(pol),
                 "latex": latex(pol),
@@ -43,20 +49,21 @@ def properties(poly):
                 "expr": format(deriv1),
                 "latex": latex(deriv1),
             },
-            "derivada2": {
+            "derivada2": { 
                 "expr": format(deriv2),
                 "latex": latex(deriv2),
             },
             "raices": {
-                "rpol": format(raices),
-                "rder1": format(raicesD1),
+                "rfun": format(raices),
+                "rder1": format(raicesD1), 
                 "rder2": format(raicesD2),
             },
+            "ventanaX": format(ventanaX),
         }
     elif len(polinL) == 2:
         polNum, polDen = polinL
-        polNum = Poly(polNum)
-        polDen = Poly(polDen)
+        polNum = Poly(polNum, x, domain= 'R')
+        polDen = Poly(polDen,x, domain='R')
         raices = aprox(real_roots(polNum))
         polos = aprox(real_roots(polDen))
         rac = polNum/polDen
@@ -69,16 +76,19 @@ def properties(poly):
         raicesD2 = aprox(real_roots(der2Num))
         polosyRaices= polos + raices
         polosyRaices.sort()
-        ventanaX = [2*polosyRaices[0] - polosyRaices[-1],   2*polosyRaices[-1] - polosyRaices[0]] if (len(polosyRaices) > 1) \
+        ventanaX = [1.1*polosyRaices[0] - 0.1*polosyRaices[-1],   1.1*polosyRaices[-1] - 0.1*polosyRaices[0]] if (len(polosyRaices) > 1) \
             else [- abs(polosyRaices[0])*1.2, abs(polosyRaices[0])*1.2]
+        ventanaX[0]= floor(ventanaX[0])
+        ventanaX[1]= math.ceil(ventanaX[1])
         return {
+            "racional": format(true),
             "polNum": {
-                "expr": format(polNum),
-                "latex": latex(polNum)
+                "expr": format(polNum.as_expr()),
+                "latex": latex(polNum.as_expr())
             },
             "polDen": {
-                "expr": format(polDen),
-                "latex": latex(polDen)
+                "expr": format(polDen.as_expr()),
+                "latex": latex(polDen.as_expr())
             },
             "derivada": {
                 "expr": format(deriv1),
@@ -89,9 +99,9 @@ def properties(poly):
                 "latex": latex(deriv2)
             },
             "raices": {
-                "polNum": format(raices),
-                "derNum": format(raicesD1),
-                "der2Num": format(raicesD2)
+                "rfun": format(raices),
+                "rder1": format(raicesD1),
+                "rder2": format(raicesD2)
             },
             "polos": format(polos),
             "ventanaX": format(ventanaX),
