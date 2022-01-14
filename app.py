@@ -35,10 +35,12 @@ def properties(poly):
         raices = aprox(real_roots(pol))
         raicesD1 = aprox(real_roots(deriv1))
         raicesD2 = aprox(real_roots(deriv2))
-        ventanaX = [1.1*raices[0] - 0.1*raices[-1], 1.1*raices[-1] - 0.1*raices[0]] if (len(raices) > 1) \
-            else [- abs(raices[0])*1.2, abs(raices[0])*1.2]
-        ventanaX[0]= floor(ventanaX[0])
-        ventanaX[1]= math.ceil(ventanaX[1])
+        raicesyDer= raices + raicesD1
+        raicesyDer.sort()
+        ventanaX = [1.1*raicesyDer[0] - 0.1*raicesyDer[-1], 1.1*raicesyDer[-1] - 0.1*raicesyDer[0]] if (len(raicesyDer) > 1) \
+            else [- abs(raicesyDer[0])*1.2, abs(raicesyDer[0])*1.2]
+        ventanaX[0]= floor(ventanaX[0]) if ventanaX[0] < 0 else -5
+        ventanaX[1]= math.ceil(ventanaX[1]) if ventanaX[1] > 0 else 5
         return {
             "racional": format(false),
             "polinomio": {
@@ -62,24 +64,29 @@ def properties(poly):
         }
     elif len(polinL) == 2:
         polNum, polDen = polinL
-        polNum = Poly(polNum, x, domain= 'R')
-        polDen = Poly(polDen,x, domain='R')
+        polNum = Poly(polNum, x, domain= 'QQ')
+        polDen = Poly(polDen,x, domain='QQ')
         raices = aprox(real_roots(polNum))
         polos = aprox(real_roots(polDen))
+        remov = discontRemov(raices, polos)
+        raices = quitaRemov(raices, remov)
+        polos = quitaRemov(polos, remov)
         rac = polNum/polDen
         derNum = diff(polNum, x)*polDen-polNum*diff(polDen, x)
         deriv1 = diff(rac, x)
+        junDeriv= together(deriv1)
         deriv2 = diff(deriv1, x)
         der2Num = diff(derNum, x)*polDen**2 - \
             2*polDen*diff(polDen, x)*derNum
-        raicesD1 = aprox(real_roots(derNum))
-        raicesD2 = aprox(real_roots(der2Num))
-        polosyRaices= polos + raices
-        polosyRaices.sort()
-        ventanaX = [1.1*polosyRaices[0] - 0.1*polosyRaices[-1],   1.1*polosyRaices[-1] - 0.1*polosyRaices[0]] if (len(polosyRaices) > 1) \
-            else [- abs(polosyRaices[0])*1.2, abs(polosyRaices[0])*1.2]
-        ventanaX[0]= floor(ventanaX[0])
-        ventanaX[1]= math.ceil(ventanaX[1])
+        raicesD1 = quitaRemov(aprox(real_roots(derNum)), remov)
+        raicesD2 = quitaRemov(aprox(real_roots(der2Num)), remov)
+        polosRaicesyDer= polos + raices
+        polosRaicesyDer= polosRaicesyDer + raicesD1
+        polosRaicesyDer.sort()
+        ventanaX = [1.1*polosRaicesyDer[0] - 0.1*polosRaicesyDer[-1],   1.1*polosRaicesyDer[-1] - 0.1*polosRaicesyDer[0]] if len(polosRaicesyDer) > 1 \
+            else [- abs(polosRaicesyDer[0])*1.2, abs(polosRaicesyDer[0])*1.2]
+        ventanaX[0]= floor(ventanaX[0]) if ventanaX[0] < 0 else -5
+        ventanaX[1]= math.ceil(ventanaX[1]) if ventanaX[1] > 0 else 5
         return {
             "racional": format(true),
             "polNum": {
@@ -92,7 +99,7 @@ def properties(poly):
             },
             "derivada": {
                 "expr": format(deriv1),
-                "latex": latex(deriv1)
+                "latex": latex(junDeriv)
             },
             "derivada2": {
                 "expr": format(deriv2),
@@ -104,8 +111,9 @@ def properties(poly):
                 "rder2": format(raicesD2)
             },
             "polos": format(polos),
+            "remov": format(remov),
             "ventanaX": format(ventanaX),
-            "polosyRaices": format(polosyRaices),
+            "polosRaicesyDer": format(polosRaicesyDer),
         }
     else:
         return {"error": "algo salio mal"}
@@ -119,6 +127,28 @@ def aprox(raices):
         else:
             rAprox.append(r.evalf(15))
     return rAprox
+
+def discontRemov(raices, polos):
+    remov= []
+    for r in raices:
+        for p in polos:
+            if r == p:
+                remov.append(r)
+    return remov
+
+
+def quitaRemov(arr, remov):
+    result= arr.copy()
+    for item in remov:
+        while True:
+            try:
+                result.remove(item)
+            except ValueError:
+                break        
+    return result
+    
+
+
 
 
 if __name__ == '__main__':
