@@ -32,15 +32,23 @@ def properties(poly):
         pol = polinL[0]
         deriv1 = diff(pol, x)
         deriv2 = diff(deriv1, x)
-        raices = aprox(real_roots(pol))
-        raicesD1 = aprox(real_roots(deriv1))
-        raicesD2 = aprox(real_roots(deriv2))
-        raicesyDer= raices + raicesD1
-        raicesyDer.sort()
+        pol = Poly(pol)
+        if len(pol.rep.rep) == 2:
+            polLin = pol.rep.rep
+            raices = [-polLin[1]/polLin[0]]
+            raicesD1 = []
+            raicesyDer = raices.copy()
+            raicesD2 = [0]
+        else:
+            raices = aprox(real_roots(pol))
+            raicesD1 = aprox(real_roots(deriv1))
+            raicesD2 = aprox(real_roots(deriv2))
+            raicesyDer = raices + raicesD1
+            raicesyDer.sort()
         ventanaX = [1.1*raicesyDer[0] - 0.1*raicesyDer[-1], 1.1*raicesyDer[-1] - 0.1*raicesyDer[0]] if (len(raicesyDer) > 1) \
             else [- abs(raicesyDer[0])*1.2, abs(raicesyDer[0])*1.2]
-        ventanaX[0]= floor(ventanaX[0]) if ventanaX[0] < 0 else -5
-        ventanaX[1]= math.ceil(ventanaX[1]) if ventanaX[1] > 0 else 5
+        ventanaX[0] = floor(ventanaX[0]) if ventanaX[0] < 0 else -10
+        ventanaX[1] = math.ceil(ventanaX[1]) if ventanaX[1] > 0 else 10
         return {
             "racional": format(false),
             "polinomio": {
@@ -51,21 +59,21 @@ def properties(poly):
                 "expr": format(deriv1),
                 "latex": latex(deriv1),
             },
-            "derivada2": { 
+            "derivada2": {
                 "expr": format(deriv2),
                 "latex": latex(deriv2),
             },
             "raices": {
                 "rfun": format(raices),
-                "rder1": format(raicesD1), 
+                "rder1": format(raicesD1),
                 "rder2": format(raicesD2),
             },
             "ventanaX": format(ventanaX),
         }
     elif len(polinL) == 2:
         polNum, polDen = polinL
-        polNum = Poly(polNum, x, domain= 'QQ')
-        polDen = Poly(polDen,x, domain='QQ')
+        polNum = Poly(polNum, x, domain='QQ')
+        polDen = Poly(polDen, x, domain='QQ')
         raices = aprox(real_roots(polNum))
         polos = aprox(real_roots(polDen))
         remov = discontRemov(raices, polos)
@@ -74,19 +82,19 @@ def properties(poly):
         rac = polNum/polDen
         derNum = diff(polNum, x)*polDen-polNum*diff(polDen, x)
         deriv1 = diff(rac, x)
-        junDeriv= together(deriv1)
+        junDeriv = together(deriv1)
         deriv2 = diff(deriv1, x)
         der2Num = diff(derNum, x)*polDen**2 - \
             2*polDen*diff(polDen, x)*derNum
         raicesD1 = quitaRemov(aprox(real_roots(derNum)), remov)
         raicesD2 = quitaRemov(aprox(real_roots(der2Num)), remov)
-        polosRaicesyDer= polos + raices
-        polosRaicesyDer= polosRaicesyDer + raicesD1
+        polosRaicesyDer = polos + raices
+        polosRaicesyDer = polosRaicesyDer + raicesD1
         polosRaicesyDer.sort()
         ventanaX = [1.1*polosRaicesyDer[0] - 0.1*polosRaicesyDer[-1],   1.1*polosRaicesyDer[-1] - 0.1*polosRaicesyDer[0]] if len(polosRaicesyDer) > 1 \
             else [- abs(polosRaicesyDer[0])*1.2, abs(polosRaicesyDer[0])*1.2]
-        ventanaX[0]= floor(ventanaX[0]) if ventanaX[0] < 0 else -5
-        ventanaX[1]= math.ceil(ventanaX[1]) if ventanaX[1] > 0 else 5
+        ventanaX[0] = floor(ventanaX[0]) if ventanaX[0] < 0 else -5
+        ventanaX[1] = math.ceil(ventanaX[1]) if ventanaX[1] > 0 else 5
         return {
             "racional": format(true),
             "polNum": {
@@ -117,6 +125,7 @@ def properties(poly):
         }
     else:
         return {"error": "algo salio mal"}
+    return {"error": "hubo error al calcular con la expresión"}
 
 
 def aprox(raices):
@@ -128,8 +137,9 @@ def aprox(raices):
             rAprox.append(r.evalf(15))
     return rAprox
 
+
 def discontRemov(raices, polos):
-    remov= []
+    remov = []
     for r in raices:
         for p in polos:
             if r == p:
@@ -138,17 +148,14 @@ def discontRemov(raices, polos):
 
 
 def quitaRemov(arr, remov):
-    result= arr.copy()
+    result = arr.copy()
     for item in remov:
         while True:
             try:
                 result.remove(item)
             except ValueError:
-                break        
+                break
     return result
-    
-
-
 
 
 if __name__ == '__main__':
