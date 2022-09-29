@@ -24,7 +24,7 @@ def info():
 
 
 @app.route('/api/v1/polynomial/properties/<path:poly>', methods=['GET'])
-@cross_origin(origin='http://localhost:8080', headers=['Content-Type', 'Authorization'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def properties(poly):
     x = symbols('x')
     polinL = poly.split(',')
