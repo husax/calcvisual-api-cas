@@ -31,6 +31,7 @@ def properties(poly):
     if len(polinL) == 1:
         pol = polinL[0]
         deriv1 = diff(pol, x)
+        # hay que considerar por separado los casos cuadratico lineal y constante
         deriv2 = diff(deriv1, x)
         pol = Poly(pol)
         if len(pol.rep.rep) == 2:
@@ -42,7 +43,8 @@ def properties(poly):
         else:
             raices = aprox(real_roots(pol))
             raicesD1 = aprox(real_roots(deriv1))
-            raicesD2 = aprox(real_roots(deriv2))
+            der2Pol = Poly(deriv2)
+            raicesD2 = aprox(real_roots(der2Pol))
             raicesyDer = raices + raicesD1
             raicesyDer.sort()
         ventanaX = [1.1*raicesyDer[0] - 0.1*raicesyDer[-1], 1.1*raicesyDer[-1] - 0.1*raicesyDer[0]] if (len(raicesyDer) > 1) \
