@@ -30,40 +30,68 @@ def properties(poly):
     polinL = poly.split(',')
     if len(polinL) == 1:
         pol = polinL[0]
-        deriv1 = diff(pol, x)
-        # hay que considerar por separado los casos cuadratico lineal y constante
-        deriv2 = diff(deriv1, x)
-        pol = Poly(pol)
-        if len(pol.rep.rep) == 2:
+        pol= Poly(pol, x, domain= 'QQ')
+        print(pol.rep.rep)
+        if len(pol.rep.rep) == 1:
+            polLin=pol.rep.rep
+            raices = polLin[0] if polLin[0] == 0 else []
+            deriv1= Poly(0, x, domain= 'QQ')
+            raicesD1 = [0]
+            raicesyDer = [0]
+            deriv2= Poly(0, x, domain= 'QQ')
+            raicesD2 = [0]
+            ventanaX=[-10, 10]
+        elif len(pol.rep.rep) == 2:
             polLin = pol.rep.rep
-            raices = [-polLin[1]/polLin[0]]
+            raices = [float(-polLin[1]/polLin[0])]
+            deriv1 = diff(pol, x)
+            deriv2 = diff(deriv1, x)
             raicesD1 = []
             raicesyDer = raices.copy()
             raicesD2 = [0]
+            ventanaX = [floor( -abs(raices[0])*2.0), math.ceil( abs(raices[0])*2.0)]
+        elif len(pol.rep.rep) == 3:
+            raices = aprox(real_roots(pol))
+            deriv1 = diff(pol, x)
+            deriv2 = diff(deriv1, x)
+            polDer= deriv1.rep.rep
+            raicesD1 = [float(-polDer[1]/polDer[0])]
+            raicesyDer = raices + raicesD1
+            raicesyDer.sort()
+            raicesD2 = []
+            if len(raicesyDer) > 1:
+                ventanaX = [1.1*raicesyDer[0], 1.1*raicesyDer[-1]]
+            else:
+                ventanaX= [- abs(raicesyDer[0])*2, abs(raicesyDer[0])*2]
+            ventanaX[0]= floor(ventanaX[0])
+            ventanaX[1]= math.ceil(ventanaX[1])
         else:
+            deriv1 = diff(pol, x)
+            deriv2 = diff(deriv1, x)
+            pol = Poly(pol)
             raices = aprox(real_roots(pol))
             raicesD1 = aprox(real_roots(deriv1))
             der2Pol = Poly(deriv2)
             raicesD2 = aprox(real_roots(der2Pol))
             raicesyDer = raices + raicesD1
             raicesyDer.sort()
-        ventanaX = [1.1*raicesyDer[0] - 0.1*raicesyDer[-1], 1.1*raicesyDer[-1] - 0.1*raicesyDer[0]] if (len(raicesyDer) > 1) \
-            else [- abs(raicesyDer[0])*1.2, abs(raicesyDer[0])*1.2]
-        ventanaX[0] = floor(ventanaX[0]) if ventanaX[0] < 0 else -10
-        ventanaX[1] = math.ceil(ventanaX[1]) if ventanaX[1] > 0 else 10
+            ventanaX = [1.1*raicesyDer[0] - 0.1*raicesyDer[-1], 1.1*raicesyDer[-1] - 0.1*raicesyDer[0]] if (len(raicesyDer) > 1) \
+                else [- abs(raicesyDer[0])*1.2, abs(raicesyDer[0])*1.2]
+            ventanaX[0] = floor(ventanaX[0]) if ventanaX[0] < 0 else -10
+            ventanaX[1] = math.ceil(ventanaX[1]) if ventanaX[1] > 0 else 10
         return {
             "racional": format(false),
             "polinomio": {
-                "expr": format(pol),
-                "latex": latex(pol),
+                "expr": format(pol.as_expr()),
+                "latex": latex(pol.as_expr()),
             },
             "derivada": {
-                "expr": format(deriv1),
-                "latex": latex(deriv1),
+                "expr": format(deriv1.as_expr()),
+                "latex": latex(deriv1.as_expr()),
             },
             "derivada2": {
-                "expr": format(deriv2),
-                "latex": latex(deriv2),
+                "expr": format(deriv2.as_expr()),
+                "latex": latex(deriv2.as_expr()),
             },
             "raices": {
                 "rfun": format(raices),
