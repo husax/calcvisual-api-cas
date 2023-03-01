@@ -116,7 +116,9 @@ def properties(poly):
         deriv2 = diff(deriv1, x)
         der2Num = diff(derNum, x)*polDen**2 - \
             2*polDen*diff(polDen, x)*derNum
-        raicesD1 = quitaRemov(aprox(real_roots(derNum)), remov)
+        raicesD1 = aprox(real_roots(derNum))
+        remov= discontRemov(raicesD1, polos)
+        raicesD1 = quitaRemov(raicesD1, remov)    
         raicesD2 = quitaRemov(aprox(real_roots(der2Num)), remov)
         polosRaicesyDer = polos + raices
         polosRaicesyDer = polosRaicesyDer + raicesD1
