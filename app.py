@@ -11,7 +11,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @app.route('/api/v1/info', methods=['GET', 'POST'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+@cross_origin(origins='*', expose_headers=['Content-Type', 'Authorization'])
 def info():
     x, y = symbols('x,y')
     polynomial = '4*x**2'
@@ -24,7 +24,7 @@ def info():
 
 
 @app.route('/api/v1/polynomial/properties/<path:poly>', methods=['GET'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+@cross_origin(origins='*', expose_headers=['Content-Type', 'Authorization'])
 def properties(poly):
     x = symbols('x')
     polinL = poly.split(',')
@@ -189,6 +189,5 @@ def quitaRemov(arr, remov):
                 break
     return result
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='127.0.0.1')
