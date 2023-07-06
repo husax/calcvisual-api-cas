@@ -60,11 +60,20 @@ def properties(poly):
             raicesyDer.sort()
             raicesD2 = []
             if len(raicesyDer) > 1:
-                ventanaX = [1.1*raicesyDer[0], 1.1*raicesyDer[-1]]
+                ventanaX = [1.5*raicesyDer[0], 1.5*raicesyDer[-1]]
+                if ventanaX[0] >= 0:
+                    ventanaX[0] = - ventanaX[0] if ventanaX[0] > 1 \
+                    else -2
+                if ventanaX[1] < 0:
+                    ventanaX[1] = - ventanaX[1] if ventanaX[1] < -1 \
+                    else 2
             else:
-                ventanaX= [- abs(raicesyDer[0])*2, abs(raicesyDer[0])*2]
-            ventanaX[0]= floor(ventanaX[0])
-            ventanaX[1]= math.ceil(ventanaX[1])
+                if raicesyDer[0] != 0:
+                    ventanaX= [- abs(raicesyDer[0])*2, abs(raicesyDer[0])*2]
+                    ventanaX[0]= floor(ventanaX[0])
+                    ventanaX[1]= math.ceil(ventanaX[1])
+                else:
+                    ventanaX= [-10, 10]
         else:
             deriv1 = diff(pol, x)
             deriv2 = diff(deriv1, x)
@@ -152,8 +161,8 @@ def properties(poly):
             },
             "polos": format(polos),
             "remov": format(remov),
-            "ventanaX": format(ventanaX),
             "polosRaicesyDer": format(polosRaicesyDer),
+            "ventanaX": format(ventanaX),
         }
     else:
         return {"error": "algo salio mal"}
