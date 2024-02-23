@@ -114,10 +114,11 @@ def properties(poly):
         polNum = Poly(polNum, x, domain='QQ')
         polDen = Poly(polDen, x, domain='QQ')
         raices = aprox(real_roots(polNum))
+        raices.sort()
         polos = aprox(real_roots(polDen))
+        polosOrig= polos.copy()
+        polos.sort()
         remov = discontRemov(raices, polos)
-        raices = quitaRemov(raices, remov)
-        polos = quitaRemov(polos, remov)
         rac = polNum/polDen
         derNum = diff(polNum, x)*polDen-polNum*diff(polDen, x)
         deriv1 = diff(rac, x)
@@ -126,9 +127,14 @@ def properties(poly):
         der2Num = diff(derNum, x)*polDen**2 - \
             2*polDen*diff(polDen, x)*derNum
         raicesD1 = aprox(real_roots(derNum))
-        remov= discontRemov(raicesD1, polos)
-        raicesD1 = quitaRemov(raicesD1, remov)    
-        raicesD2 = quitaRemov(aprox(real_roots(der2Num)), remov)
+        polosD1= polosOrig + polosOrig
+        polosD2= polosD1 + polosD1
+        polosD1.sort()
+        polosD2.sort
+        removD1= discontRemov(raicesD1, polosD1)
+        #raicesD1 = quitaRemov(raicesD1, remov)    
+        raicesD2 = aprox(real_roots(der2Num))
+        removD2= discontRemov(raicesD2, polosD2)
         polosRaicesyDer = polos + raices
         polosRaicesyDer = polosRaicesyDer + raicesD1
         polosRaicesyDer.sort()
@@ -168,7 +174,7 @@ def properties(poly):
         return {"error": "algo salio mal"}
     return {"error": "hubo error al calcular con la expresión"}
 
-
+# 
 def aprox(raices):
     rAprox = []
     for r in raices:
@@ -178,25 +184,25 @@ def aprox(raices):
             rAprox.append(r.evalf(15))
     return rAprox
 
-
+# Remueve en raices y polos los valores comunes 
+# que corresponden a discontinuidades removibles. 
+# Toma en cuenta las multiplicidades
+# Ojo: modifica ambos arreglos
 def discontRemov(raices, polos):
-    remov = []
+    aRemov = []
     for r in raices:
         for p in polos:
             if r == p:
-                remov.append(r)
-    return remov
-
-
-def quitaRemov(arr, remov):
-    result = arr.copy()
-    for item in remov:
-        while True:
-            try:
-                result.remove(item)
-            except ValueError:
+                aRemov.append(r)
+                polos.remove(p)
                 break
+<<<<<<< HEAD
     return result
+=======
+    for item in aRemov:
+        raices.remove(item);            
+    return aRemov
+>>>>>>> dec3a068b94cb9d82501de17acdfa303f3f9ba6d
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1')
