@@ -21,7 +21,16 @@ def info():
         "polynomial": polynomial,
         "derivative": derivative
     }
-
+    
+@app.route('/api/v1/raices_reales/<path:poly>', methods=['GET', 'POST'])
+@cross_origin(origins='*', expose_headers=['Content-Type', 'Authorization'])
+def raices_reales(poly):
+    x = symbols('x')
+    pol = Poly(poly, x, domain='QQ')
+    raices = aprox(real_roots(pol))
+    return {
+        "raices": format(raices)
+    }
 
 @app.route('/api/v1/polynomial/properties/<path:poly>', methods=['GET'])
 @cross_origin(origins='*', expose_headers=['Content-Type', 'Authorization'])
@@ -196,13 +205,9 @@ def discontRemov(raices, polos):
                 aRemov.append(r)
                 polos.remove(p)
                 break
-<<<<<<< HEAD
-    return result
-=======
     for item in aRemov:
         raices.remove(item);            
     return aRemov
->>>>>>> dec3a068b94cb9d82501de17acdfa303f3f9ba6d
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1')
