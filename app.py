@@ -40,9 +40,10 @@ def properties(poly):
     if len(polinL) == 1:
         pol = polinL[0]
         pol= Poly(pol, x, domain= 'QQ')
-        print(pol.rep.rep)
-        if len(pol.rep.rep) == 1:
-            polLin=pol.rep.rep
+        print(pol.rep.to_list())
+        listcoef = pol.rep.to_list()
+        if len(listcoef) == 1:
+            polLin=pol.rep.to_list()
             raices = polLin[0] if polLin[0] == 0 else []
             deriv1= Poly(0, x, domain= 'QQ')
             raicesD1 = [0]
@@ -50,8 +51,8 @@ def properties(poly):
             deriv2= Poly(0, x, domain= 'QQ')
             raicesD2 = [0]
             ventanaX=[-10, 10]
-        elif len(pol.rep.rep) == 2:
-            polLin = pol.rep.rep
+        elif len(listcoef) == 2:
+            polLin = listcoef
             raices = [float(-polLin[1]/polLin[0])]
             deriv1 = diff(pol, x)
             deriv2 = diff(deriv1, x)
@@ -59,11 +60,11 @@ def properties(poly):
             raicesyDer = raices.copy()
             raicesD2 = [0]
             ventanaX = [floor( -abs(raices[0])*2.0), math.ceil( abs(raices[0])*2.0)]
-        elif len(pol.rep.rep) == 3:
+        elif len(listcoef) == 3:
             raices = aprox(real_roots(pol))
             deriv1 = diff(pol, x)
             deriv2 = diff(deriv1, x)
-            polDer= deriv1.rep.rep
+            polDer= deriv1.rep.to_list()
             raicesD1 = [float(-polDer[1]/polDer[0])]
             raicesyDer = raices + raicesD1
             raicesyDer.sort()
